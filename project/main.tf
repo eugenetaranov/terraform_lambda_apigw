@@ -37,6 +37,22 @@ module "apigw" {
   lambda_authorizer_invoke_arn      = module.lambda_authorizer.invoke_arn
 }
 
+resource "aws_s3_bucket" "storage" {
+  bucket_prefix = "storage-"
+}
+
+resource "aws_glue_catalog_database" "main" {
+  name = "default"
+}
+
+module "glue_s3_crawler_main" {
+  source             = "../modules/glue_s3_crawler"
+  glue_crawler_name  = "main"
+  glue_database_name = aws_glue_catalog_database.main.name
+  s3_bucket          = aws_s3_bucket.storage.bucket
+  s3_bucket_arn      = aws_s3_bucket.storage.arn
+}
+
 output "api_gw_url" {
   value = module.apigw.api_url
 }
