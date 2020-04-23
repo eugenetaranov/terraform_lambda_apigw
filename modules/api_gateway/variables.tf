@@ -32,12 +32,6 @@ variable "api_endpoint_type" {
   type        = string
 }
 
-variable "api_authorizer_type_identity_source" {
-  description = "API authorizer identity source"
-  type        = string
-  default     = ""
-}
-
 variable "lambda_request_handler_arn" {
   description = "Lambda request handler ARN"
   type        = string

@@ -28,14 +28,13 @@ module "lambda_root_get" {
 }
 
 module "apigw" {
-  source                              = "../modules/api_gateway"
-  api_name                            = "test"
-  api_endpoint_type                   = "REGIONAL"
-  lambda_request_handler_arn          = module.lambda_root_get.arn
-  lambda_request_handler_invoke_arn   = module.lambda_root_get.invoke_arn
-  lambda_authorizer_arn               = module.lambda_authorizer.arn
-  lambda_authorizer_invoke_arn        = module.lambda_authorizer.invoke_arn
-  api_authorizer_type_identity_source = "method.request.header.Authorization"
+  source                            = "../modules/api_gateway"
+  api_name                          = "test"
+  api_endpoint_type                 = "REGIONAL"
+  lambda_request_handler_arn        = module.lambda_root_get.arn
+  lambda_request_handler_invoke_arn = module.lambda_root_get.invoke_arn
+  lambda_authorizer_arn             = module.lambda_authorizer.arn
+  lambda_authorizer_invoke_arn      = module.lambda_authorizer.invoke_arn
 }
 
 output "api_gw_url" {
