@@ -10,7 +10,7 @@ POLICY = {
       {
         "Action": "execute-api:Invoke",
         "Effect": "Allow",
-        "Resource": "arn:aws:execute-api:us-east-1:829968223664:kehyar0h07/*/GET/"
+        "Resource": "arn:aws:execute-api:us-east-1:829968223664:*/*/GET/"
       }
     ]
   },

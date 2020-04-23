@@ -9,10 +9,16 @@ variable "api_description" {
   default     = ""
 }
 
-variable "api_authorizer_lambda" {
-  description = "API authorizer lambda function"
+variable "lambda_authorizer_arn" {
+  description = "API authorizer lambda function ARN"
   type        = string
-  default = ""
+  default     = ""
+}
+
+variable "lambda_authorizer_invoke_arn" {
+  description = "API authorizer lambda function invoke ARN"
+  type        = string
+  default     = ""
 }
 
 variable "tags" {
@@ -26,24 +32,18 @@ variable "api_endpoint_type" {
   type        = string
 }
 
-variable "api_authorizer_type" {
-  description = "API authorizer type"
-  type = string
-  default = "NONE"
-}
-
 variable "api_authorizer_type_identity_source" {
   description = "API authorizer identity source"
-  type = string
-  default = ""
+  type        = string
+  default     = ""
 }
 
 variable "lambda_request_handler_arn" {
   description = "Lambda request handler ARN"
-  type = string
+  type        = string
 }
 
 variable "lambda_request_handler_invoke_arn" {
   description = "Lambda request handler invoke ARN"
-  type = string
+  type        = string
 }

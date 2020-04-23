@@ -8,24 +8,24 @@ resource "aws_api_gateway_rest_api" "api" {
 }
 
 resource "aws_api_gateway_authorizer" "api" {
-  count                  = var.api_authorizer_lambda == "" ? 0 : 1
+  count                  = var.lambda_authorizer_arn == "" ? 0 : 1
   name                   = var.api_name
   rest_api_id            = aws_api_gateway_rest_api.api.id
-  authorizer_uri         = var.api_authorizer_lambda
+  authorizer_uri         = var.lambda_authorizer_invoke_arn
   authorizer_credentials = aws_iam_role.authorizer[0].arn
-  type                   = var.api_authorizer_type
+  type                   = var.lambda_authorizer_arn == "" ? "NONE" : "TOKEN"
   identity_source        = var.api_authorizer_type_identity_source
 }
 
 resource "aws_iam_role" "authorizer" {
-  count              = var.api_authorizer_lambda == "" ? 0 : 1
+  count              = var.lambda_authorizer_arn == "" ? 0 : 1
   name               = "apigw-authorizer-role-${var.api_name}"
   assume_role_policy = data.aws_iam_policy_document.authorizer_assume_role[0].json
   tags               = var.tags
 }
 
 data "aws_iam_policy_document" "authorizer_assume_role" {
-  count = var.api_authorizer_lambda == "" ? 0 : 1
+  count = var.lambda_authorizer_arn == "" ? 0 : 1
   statement {
     actions = ["sts:AssumeRole"]
 
@@ -37,21 +37,21 @@ data "aws_iam_policy_document" "authorizer_assume_role" {
 }
 
 resource "aws_iam_role_policy" "authorizer_role_policy" {
-  count  = var.api_authorizer_lambda == "" ? 0 : 1
+  count  = var.lambda_authorizer_arn == "" ? 0 : 1
   name   = "apigw-authorizer-rolepolicy-${var.api_name}"
   role   = aws_iam_role.authorizer[0].id
   policy = data.aws_iam_policy_document.authorizer_role[0].json
 }
 
 data "aws_iam_policy_document" "authorizer_role" {
-  count = var.api_authorizer_lambda == "" ? 0 : 1
+  count = var.lambda_authorizer_arn == "" ? 0 : 1
   statement {
     actions = [
       "lambda:InvokeFunction",
     ]
 
     resources = [
-      var.api_authorizer_lambda
+      var.lambda_authorizer_arn
     ]
   }
 }
@@ -67,8 +67,8 @@ resource "aws_api_gateway_method" "proxy" {
   rest_api_id   = aws_api_gateway_rest_api.api.id
   resource_id   = aws_api_gateway_resource.proxy.id
   http_method   = "ANY"
-  authorization = var.api_authorizer_type
-  authorizer_id = var.api_authorizer_lambda == "" ? "" : aws_api_gateway_authorizer.api[0].id
+  authorization = var.lambda_authorizer_arn == "" ? "NONE" : "CUSTOM"
+  authorizer_id = var.lambda_authorizer_arn == "" ? "" : aws_api_gateway_authorizer.api[0].id
 }
 
 resource "aws_api_gateway_integration" "lambda" {
@@ -84,8 +84,8 @@ resource "aws_api_gateway_method" "proxy_root" {
   rest_api_id   = aws_api_gateway_rest_api.api.id
   resource_id   = aws_api_gateway_rest_api.api.root_resource_id
   http_method   = "ANY"
-  authorization = var.api_authorizer_type
-  authorizer_id = var.api_authorizer_lambda == "" ? "" : aws_api_gateway_authorizer.api[0].id
+  authorization = var.lambda_authorizer_arn == "" ? "NONE" : "CUSTOM"
+  authorizer_id = var.lambda_authorizer_arn == "" ? "" : aws_api_gateway_authorizer.api[0].id
 }
 
 resource "aws_api_gateway_integration" "lambda_root" {
